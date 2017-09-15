@@ -1,0 +1,5 @@
+[DEFAULT]
+DATABASE_USER = postgres
+DATABASE_HOST = localhost
+DATABASE_NAME = postgres
+DATABASE_PORT = 5432
