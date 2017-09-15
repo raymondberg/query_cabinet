@@ -1,0 +1,54 @@
+#! /usr/bin/env python
+
+import os
+import string
+
+import yaml
+
+query_folder = 'queries'
+
+def multi_line_get(message, end_character=';'):
+    lines = [ input('{} (end with {}) '.format(message, end_character)) ]
+
+    while end_character not in lines[-1]:
+        lines.append(input('> '))
+
+    return '\n'.join(lines)
+
+def extract_params_from_template_string(template_string):
+    return [s[1] for s in string.Formatter().parse(template_string) if s[1] is not None]
+
+def resolve_params(param_names):
+    params = []
+    for name in param_names:
+        print('A parameter was detected with the name `{}`'.format(name))
+        description = input('\tHow would you describe this parameter? ')
+        params.append({'name':name, 'description': description})
+    return params
+
+def establish_group_folder(group):
+    group_folderpath=os.path.join(query_folder, group)
+
+    if not os.path.isdir(group_folderpath):
+        os.mkdir(group_folderpath)
+    return group_folderpath
+
+def save_yaml(filepath, data):
+    with open(filename, 'w') as file:
+        yaml_output = yaml.dump(data, default_flow_style=False)
+        file.write(yaml_output)
+
+if __name__ == '__main__':
+    group = input('What group will this query be under? ')
+    name = input('What would you like the short name of your query to be? (e.g. book_count_today_by_hour) ')
+    description = multi_line_get('Please paste a detailed description of this query: ', '..')
+    query = multi_line_get('Please paste your query template: ')
+    params = resolve_params(extract_params_from_template_string(query))
+
+    filename = os.path.join(establish_group_folder(group), name)
+    save_yaml(filename, {
+        'description': description,
+        'name': name,
+        'query': query,
+        'query_params': params,
+    })

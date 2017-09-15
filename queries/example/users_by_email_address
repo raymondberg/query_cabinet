@@ -1,0 +1,11 @@
+description: This query will retrieve all users in the database whose email matches
+  the email address parameter..
+name: users_by_email_address
+query: 'select *
+
+  from users
+
+  where email = ''{email_address}'';'
+query_params:
+- description: the email addressed used to filter the results
+  name: email_address
