@@ -1,0 +1,9 @@
+description: All Nab::RetrievalReferenceRequests by case number..
+name: nab_retrievals_by_case_number
+query: "select *
+  from arbiter_production.nab_retrieval_reference_requests nrr
+  where
+   nrr.nab_ref = '{case_number}';"
+query_params:
+- description: The case number to filter retrievals
+  name: case_number

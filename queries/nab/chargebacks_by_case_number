@@ -1,0 +1,9 @@
+description: All Nab::ChargebackAcknowledgements by case number..
+name: nab_chargebacks_by_case_number
+query: "select *
+  from arbiter_production.nab_chargeback_acknowledgements nca
+  where
+   nca.nab_ref = '{case_number}';"
+query_params:
+- description: The case number to filter chargebacks
+  name: case_number
