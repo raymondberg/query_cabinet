@@ -1,0 +1,104 @@
+description: 'Ever wanted to see all the processor record info for a wells
+transaction? This is your query.  This is designed to merge
+Funding::DisputeMessages(FDM), Wells::Alerts(WA), and Wells::CashManagement::Chargebacks(WCMC)
+into a single common view so you can trace the activity for Wells over time.
+
+It comes in three basic parts:
+ - Dispute columns (public_id, kind, status, case_number) if dispute has been assigned for a record
+ - Dispute history event status that connects the dispute to the record if it has been assigned
+ - The processor record itself, mapped to a common set of columns:
+
+amount:
+ FDM : amount
+ WA  : requested_amount
+ WCMC: amount
+
+kind:
+ FDM : kind
+ WA  : raw_kind
+ WCMC: record_type
+
+transaction_public_id:
+ FDM : transaction_public_id
+ WA  : invoice_number (lowercased)
+ WCMC: invoice_number (lowercased)
+
+reference_number:
+ FDM : reference_number
+ WA  : transaction_reference_number
+ WCMC: raw_reference_number
+
+case_number:
+ FDM : case_number
+ WA  : a-smart-prefix + routing_field
+ WCMC: a-smart-prefix + routing_field
+..'
+name: processor_record_joined_view_by_transaction
+query: "
+select
+ d.public_id as dispute_public_id
+ , d.kind as dispute_kind
+ , d.status as dispute_status
+ , d.case_number as dispute_case_number
+ , dhe.status as history_event_status
+ , mwt.*
+from
+
+-- begin master wells table
+
+(
+  select id
+    , 'Funding::DisputeMessage' as processor_record_type
+    , created_at
+    , amount
+    , status
+    , kind
+    , transaction_public_id as gateway_transaction_public_id
+    , reference_number
+    , case_number
+  from arbiter_production.funding_dispute_messages
+  where
+    transaction_public_id = '{gateway_transaction_public_id}'
+  union all
+  select
+    id
+    , 'Wells::Alert' as processor_record_type
+    , created_at
+    , requested_amount
+    , raw_kind
+    , request_type
+    , lower(invoice_number) as gateway_transaction_public_id
+    , transaction_reference_number as reference_number
+    , concat(CASE WHEN raw_kind = '1' THEN 'RT' WHEN raw_kind in ('2','3','5') THEN 'CB' ELSE '' END , routing_field)
+  from arbiter_production.wells_alerts
+  where
+    lower(invoice_number) = '{gateway_transaction_public_id}'
+  union all
+  select
+    id
+    , 'Wells::CashManagement::Chargeback' as processor_record_type
+    , created_at
+    , amount
+    , record_type
+    , resolution_code_1
+    , lower(invoice_number) as gateway_transaction_public_id
+    , raw_reference_number as reference_number
+    , concat('CB', entitlement_number)
+   as case_number
+  from arbiter_production.wells_cash_management_chargebacks
+  where
+    lower(invoice_number) = '{gateway_transaction_public_id}'
+)
+as mwt
+
+-- end master wells table
+
+  left outer join arbiter_production.dispute_history_events dhe
+    on dhe.processor_record_type = mwt.processor_record_type
+    and dhe.processor_record_id = mwt.id
+  left
+   outer join arbiter_production.disputes d on dhe.dispute_id = d.id
+  order by mwt.created_at;"
+query_params:
+- description: The transaction public_id on the transaction being disputed
+  name: gateway_transaction_public_id
