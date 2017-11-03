@@ -9,7 +9,7 @@ class Prompter():
     @classmethod
     def query_group(cls, groups=None):
         if groups is not None:
-            print('\nGroups: \n{}\n'.format('t'.join(groups)))
+            print('\nGroups: \n{}\n'.format('\t'.join(groups)))
         return input('What is the group of the query? ')
 
     @classmethod

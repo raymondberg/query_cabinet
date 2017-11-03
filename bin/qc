@@ -21,10 +21,10 @@ def create():
 qc.add_command(create)
 
 @click.command()
-@click.option('--query_group', prompt=None, help='group containing the query')
-@click.option('--query_name', default=None, help='name of the query')
-@click.option('--password', prompt=True, hide_input=True, help='password to connect (you really should not pass this as a command line parameter, you will be prompted)')
-@click.option('--output', default=None, help='output file for the query (defaults to a concatenation of the query location)')
+@click.option('--query_group', '-g', prompt=None, help='group containing the query')
+@click.option('--query_name', '-n', default=None, help='name of the query')
+@click.option('--password', '-p', prompt=True, hide_input=True, help='password to connect (you really should not pass this as a command line parameter, you will be prompted)')
+@click.option('--output', '-o', default=None, help='output file for the query (defaults to a concatenation of the query location)')
 def run(query_group, query_name, password, output):
   query = Query.load(query_group=query_group, query_name=query_name)
 
