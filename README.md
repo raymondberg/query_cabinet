@@ -24,7 +24,7 @@ Then fill in your database values in the `db.config` file using your editor of c
 Use `bin/create` and `bin/run` to create and run your queries, respectively. Here's an example:
 
 ```
-→ bin/create
+→ .bin/qc create
 
 What group will this query be under? example
 What would you like the short name of your query to be? (e.g. book_count_today_by_hour) users_by_email_address
@@ -35,9 +35,7 @@ Please paste your query template:  (end with ;) select *
 > A parameter was detected with the name `email_address`
 >         How would you describe this parameter? the email addressed used to filter the results
 
-
-
-→ bin/run
+→ ./bin/qc run --query_group example --query_name users_by_email_address
 the email address of the user you are seeking
 Value for `email_address` >bam@example.com
 Trying to connect to localhost:5432/postgres as postgres
@@ -53,10 +51,19 @@ id,name,email
 1,BamBam Rubble,bam@example.com
 ```
 
+## More Help
+
+This library implements click so you can add `--help` to any command you run.
+
+```
+./bin/qc run --help
+```
+
+It's designed to be interactive when you don't have all the info, so you can also just try running `run` or `create` without parameters at all.
+
 ## This is just the beginning
 
 More information coming soon on:
-  - Improved Interface with Command Line Params
   - Query Parameterization
   - Multi-database configuration support
   - Easier test db setup
