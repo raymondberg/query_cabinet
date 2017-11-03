@@ -13,11 +13,9 @@ class Prompter():
         return input('What is the group of the query? ')
 
     @classmethod
-    def query_name(cls, group_location):
-        print('\nQueries: ')
-        groups = os.listdir(group_location)
-        print('\t'.join(groups))
-        print()
+    def query_name(cls, names=None):
+        if names is not None:
+            print('\nQueries: \n{}\n'.format('\t'.join(names)))
         return input('What is the name of the query? ')
 
     @classmethod

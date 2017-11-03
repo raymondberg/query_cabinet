@@ -22,19 +22,23 @@ class Query:
         return os.listdir(cls.QUERY_TOP_LEVEL_DIRECTORY)
 
     @classmethod
+    def list(cls, group):
+        return os.listdir(cls.group_path(group))
+
+    @classmethod
     def build_from_user_input(cls):
-        group = Prompter.query_group(cls.groups())
-        name = Prompter.query_name()
-        description = Prompter.query_description()
-        sql = Prompter.query_sql()
-        params = Prompter.sql_param_details(sql)
+        query_group = Prompter.query_group(cls.groups())
+        query_name = Prompter.query_name(cls.list(group))
+        query_description = Prompter.query_description()
+        query_sql = Prompter.query_sql()
+        query_params = Prompter.sql_param_details(sql)
 
         return cls(
-            group=group,
-            name=name,
-            description=description,
-            sql=sql,
-            params=params
+            group=query_group,
+            name=query_name,
+            description=query_description,
+            sql=query_sql,
+            params=query_params
         )
 
     @classmethod
@@ -42,8 +46,7 @@ class Query:
         if query_group is None:
             query_group = Prompter.query_group(cls.groups())
         if query_name is None:
-            query_name = Prompter.query_name(cls.group_path(query_group))
-
+            query_name = Prompter.query_name(cls.list(query_group))
         with open(cls.file_path(query_group, query_name), 'r') as file:
             data = yaml.load(file.read())
             return cls(
