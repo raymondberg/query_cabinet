@@ -1,0 +1,43 @@
+#! /usr/bin/env python
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+
+import click
+
+from query_cabinet import Query
+from query_cabinet import get_connection
+
+
+@click.group()
+def qc():
+  pass
+
+@click.command()
+def create():
+  query = Query.build_from_user_input()
+  query.save()
+
+qc.add_command(create)
+
+@click.command()
+@click.option('--query_group', '-g', prompt=None, help='group containing the query')
+@click.option('--query_name', '-n', default=None, help='name of the query')
+@click.option('--password', '-p', prompt=True, hide_input=True, help='password to connect (you really should not pass this as a command line parameter, you will be prompted)')
+@click.option('--output', '-o', default=None, help='output file for the query (defaults to a concatenation of the query location)')
+def run(query_group, query_name, password, output):
+  query = Query.load(query_group=query_group, query_name=query_name)
+
+  if output is None:
+    output = '{}__{}.csv'.format(query.group.replace(os.sep, '_'), query.name)
+
+  connection = get_connection(password=password)
+  if connection:
+    result = query.run(connection)
+    query.dump_result(result, output)
+    print('Wrote csv {} with {} records'.format(output, query.row_count))
+
+qc.add_command(run)
+
+if __name__ == '__main__':
+  qc()
