@@ -20,5 +20,4 @@ def get_connection(password, config='DEFAULT'):
     except KeyboardInterrupt:
         pass
 
-
 dict_cursor = psycopg2.extras.DictCursor

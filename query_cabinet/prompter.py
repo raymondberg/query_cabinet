@@ -1,6 +1,8 @@
 import os
 import string
 
+import getpass
+
 class Prompter():
     @classmethod
     def query_description(cls):
@@ -23,6 +25,10 @@ class Prompter():
         return cls.multi_line_get('Please paste your query template: ')
 
     @classmethod
+    def password(cls):
+        return getpass.getpass()
+
+    @classmethod
     def sql_param_details(cls, template_string):
         params = []
         param_names = [s[1] for s in string.Formatter().parse(template_string) if s[1] is not None]
@@ -33,14 +39,15 @@ class Prompter():
         return params
 
     @classmethod
-    def resolved_template(cls, statement, params):
-        filled_params = {}
-        for param_details in params:
-            print(param_details['description'])
-            name = param_details['name']
-            filled_params[name] = input('Enter a value for `{}` > '.format(name))
+    def resolved_template(cls, statement, param_details, params=None):
+        params = {} if params is None else params
+        param_details = [detail for detail in param_details if detail['name'] not in params]
+        for param_detail in param_details:
+            print(param_detail['description'])
+            name = param_detail['name']
+            params[name] = input('Enter a value for `{}` > '.format(name))
 
-        return statement.format(**filled_params)
+        return statement.format(**params)
 
     @classmethod
     def multi_line_get(cls, message, end_character=';'):

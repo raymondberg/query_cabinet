@@ -38,7 +38,7 @@ class Query:
             name=query_name,
             description=query_description,
             sql=query_sql,
-            params=query_params
+            param_definitions=query_params
         )
 
     @classmethod
@@ -54,22 +54,22 @@ class Query:
                 name=query_name,
                 description=data['description'],
                 sql=data['query'],
-                params=data['query_params']
+                param_definitions=data['query_params']
             )
 
-    def __init__(self, group, name, description, sql, params):
+    def __init__(self, group, name, description, sql, param_definitions):
         self.group = group
         self.name = name
         self.description = description
         self.sql = sql
-        self.params = params
+        self.param_definitions = param_definitions
 
     @property
     def filename(self):
         return Query.file_path(self.group, self.name)
 
-    def run(self, connection):
-        resolved_statement = Prompter.resolved_template(self.sql, self.params)
+    def run(self, connection, params=None):
+        resolved_statement = Prompter.resolved_template(self.sql, self.param_definitions, params)
         cursor = connection.cursor(cursor_factory=dict_cursor)
         print('Executing query..........', end='')
         cursor.execute(resolved_statement)
@@ -108,7 +108,7 @@ class Query:
             'description': self.description,
             'name': self.name,
             'query': self.sql,
-            'query_params': self.params,
+            'query_params': self.param_definitions,
         }
 
         with open(self.file_path(self.group, self.name), 'w') as file:
