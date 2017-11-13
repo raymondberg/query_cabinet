@@ -83,3 +83,14 @@ Run a local postgres docker container
   ## After logging in with your POSTGRES_PASSWORD, paste the contents of `example_setup.sql` on
   ## the command line
 ```
+
+## Using on a Cpair
+
+We have some custom steps to get this setup on a cpair in BT land. Just run each of these commands in serial and you'll have an environment ready work!
+
+```
+sudo apt-get install python3-pip
+virtualenv ./venv --python=/usr/bin/python3 --no-site-packages
+source venv/bin/activate
+pip install -r requirements.txt
+```
