@@ -71,18 +71,14 @@ More information coming soon on:
 
 ## Testing
 
-Run a local postgres docker container
+This repo comes with a very basic test database to run the basic queries. To get started you'll need docker-compose.
 
 ```
   # Start dockerized database
-  docker run --name some-postgres -e POSTGRES_PASSWORD=mysecretpassword -d -p 5432:5432 postgres
-
-  # Open Docker command line
-  docker run -it --rm --link some-postgres:postgres postgres psql -h postgres -U postgres
-
-  ## After logging in with your POSTGRES_PASSWORD, paste the contents of `example_setup.sql` on
-  ## the command line
+  docker-compose up
 ```
+
+Once up, the configuration in the sample config file will allow you to run test queries.
 
 ## Using on a Cpair
 

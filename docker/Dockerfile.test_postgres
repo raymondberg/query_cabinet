@@ -1,0 +1,8 @@
+FROM postgres
+
+ENV POSTGRES_DB postgres
+COPY example_setup.sql /docker-entrypoint-initdb.d/base.sql
+
+WORKDIR /usr/src/
+
+EXPOSE 5432

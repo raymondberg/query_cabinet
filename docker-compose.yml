@@ -1,0 +1,9 @@
+version: '2'
+services:
+  test-postgres:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile.test_postgres
+    container_name: test-postgres
+    ports:
+      - "5432:5432"
