@@ -17,6 +17,8 @@ pip install -r requirements.txt
 copy db.config.sample db.config
 ```
 
+Debian: There's also a handy `bin/setup` script that will install requirements for you if you need them.
+
 Then fill in your database values in the `db.config` file using your editor of choice. You're ready to query!
 
 ## Example Usage
@@ -79,14 +81,3 @@ This repo comes with a very basic test database to run the basic queries. To get
 ```
 
 Once up, the configuration in the sample config file will allow you to run test queries.
-
-## Using on a Cpair
-
-We have some custom steps to get this setup on a cpair in BT land. Just run each of these commands in serial and you'll have an environment ready work!
-
-```
-sudo apt-get install python3-pip
-virtualenv ./venv --python=/usr/bin/python3 --no-site-packages
-source venv/bin/activate
-pip install -r requirements.txt
-```
